@@ -6,3 +6,4 @@ pandas_datareader
 yfinance
 streamlit
 plotly
+matplotlib
