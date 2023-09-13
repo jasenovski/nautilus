@@ -107,12 +107,13 @@ def pag_naut():
         "country": country,
         "period": period,
         "top_averages": top_averages,
-        "epochs": 30,
-        "times_run": 100,
+        "epochs": 100,
+        "times_run": 1000,
         "total_croms": 40,
         "n_croms": 6,
         "base_softmax": 1.10,
         "seed": None,
+        "perc_max_nan": 0.03,
         "exportar_carteira": True,
         }
     )

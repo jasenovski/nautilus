@@ -93,3 +93,6 @@ def gerar_quartis(patrimonio_acum_moneta, patrimonio_acum_index, patrimonios_ale
         quartis_aleatorios.append(np.quantile(n_aleatorios + 2 - np.where(asort == i + 2)[0], q=[0.10, 0.25, 0.5, 0.75, 0.90]))
 
     return quartis_moneta, quartis_bova, quartis_aleatorios
+
+def fo(media_quartis, media_retorno, media_ganha_index, a=1, b=1, c=1):
+    return a * media_quartis + b * media_retorno + c * media_ganha_index

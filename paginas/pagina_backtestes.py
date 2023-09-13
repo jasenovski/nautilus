@@ -115,13 +115,14 @@ def pag_bts():
         "periodos_anteriores": periodos_anteriores, 
         "periodos_segurar": periodos_segurar, 
         "mm": top_averages, 
-        "epochs": 30, 
-        "times_run": 100, 
+        "epochs": 100, 
+        "times_run": 1000, 
         "total_croms": 40, 
         "n_croms": 6,
         "base_softmax": 1.10, 
         "seed": None, 
         "n_aleatorios": qtd_aleatorios, 
+        "perc_max_nan": 0.03,
         "exportar_resultados": True
         }
     )
@@ -132,9 +133,12 @@ def pag_bts():
         
         patrimonio_moneta = resultados[0][0]
         patrimonio_index = resultados[0][1]
+        patrimonios_aleatorios = resultados[0][2]
 
         retornos_moneta = resultados[1][0]
         retornos_index = resultados[1][1]
+
+        carteiras = resultados[2]
 
         tracker = PerformanceTracker(data_returns=retornos_moneta, market_returns=retornos_index - 1, annual_risk_free=0.02, period=period)
         sharpe_ratio = tracker.sharpe_ratio()
@@ -142,21 +146,21 @@ def pag_bts():
         annualized_return = tracker.annualized_return()
         max_drawdown = tracker.max_drawdown()
 
-        resultados_gerais = resultados[2]
+        # resultados_gerais = resultados[2]
         
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=patrimonio_moneta.index, y=patrimonio_moneta, name="Moneta", line=dict(color="blue")))
         fig.add_trace(go.Scatter(x=patrimonio_index.index, y=patrimonio_index, name=f"{index_id}", line=dict(color="red")))
 
-        aleatorios = sorted(np.random.choice(range(len(resultados[0][2])), size=50, replace=False))
+        aleatorios = sorted(np.random.choice(range(len(patrimonios_aleatorios)), size=len(patrimonios_aleatorios) // 2, replace=False))
         for aleatorio in aleatorios:
-            fig.add_trace(go.Scatter(x=resultados[0][2][aleatorio].index, y=resultados[0][2][aleatorio], name=f"Aleatorio {aleatorio}", line=dict(color="green"))) \
+            fig.add_trace(go.Scatter(x=patrimonios_aleatorios[aleatorio].index, y=patrimonios_aleatorios[aleatorio], name=f"Aleatorio {aleatorio}", line=dict(color="green"))) \
             .update_traces(visible="legendonly", selector=lambda t: not t.name in ["Moneta", f"{index_id}"])
 
         st.plotly_chart(fig)
 
-        resultado_final_moneta = 100 * (patrimonio_moneta[-1] - 1)
-        resultado_final_index = 100 * (patrimonio_index[-1] - 1)
+        resultado_final_moneta = 100 * (patrimonio_moneta.iloc[-1] - 1)
+        resultado_final_index = 100 * (patrimonio_index.iloc[-1] - 1)
         delta = resultado_final_moneta - resultado_final_index
 
         # CARDS
@@ -166,3 +170,25 @@ def pag_bts():
         col3.metric("Beta", f"{beta:.2f}")
         col4.metric("Sharpe Ratio", f"{sharpe_ratio:.2f}%")
         col5.metric("Max Drawdown", f"{max_drawdown:.2f}%")
+        
+        st.subheader("Carteiras geradas no backteste")
+        st.divider()
+        for i, carteira in enumerate(carteiras):
+            data_inicial = carteira["data_inicial"]
+            data_final = carteira["data_final"]
+            wallet = carteira["carteira"]
+            retorno_esperado = carteira["retorno_esperado"]
+            risco_esperado = carteira["risco_esperado"]
+
+            df = (pd.DataFrame(wallet.values(), index=wallet.keys(), columns=["Percentuais %"]) * 100).round(2)
+            df = df[df["Percentuais %"] > 1]
+
+            
+
+            st.write(f"Carteira {i + 1}")
+            st.write(f"{data_inicial.strftime('%d/%m/%Y')} até {data_final.strftime('%d/%m/%Y')}")
+            st.dataframe(df)
+
+            col1 = st.columns(1)
+            col1[0].metric("Retorno Esperado", f"{retorno_esperado * 100:.2f}%")
+            st.divider()
