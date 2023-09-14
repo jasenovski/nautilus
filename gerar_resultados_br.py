@@ -5,7 +5,7 @@ from funcoes import utils
 from funcoes.performance_tracker import PerformanceTracker
 import pickle as pkl
 
-country = "br"
+country = "us"
 if country == "br":
     index_id = "BOVA11.SA"
     from variables import BR_STOCKS as acoes
@@ -35,7 +35,7 @@ nome = "resultados.pkl"
 
 resultados = []
 
-for k, (period, se, mm, ca, data_inicio, data_final) in list(enumerate(product(periodos, segurar, maiores_medias, cotacoes_anteriores, comecos, finais)))[810:]:
+for k, (period, se, mm, ca, data_inicio, data_final) in list(enumerate(product(periodos, segurar, maiores_medias, cotacoes_anteriores, comecos, finais))):
 
     print(f"{k + 1:05}/{k_final:05}")
     s = se[0] if period == "d" else se[1]

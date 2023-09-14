@@ -1,6 +1,7 @@
 import pandas_datareader.data as web
 import yfinance as yf
 import numpy as np
+import pandas as pd
 
 def buscar_cotacoes(start_date, end_date, tickers_list: list, country: str) -> tuple:
 
@@ -96,3 +97,46 @@ def gerar_quartis(patrimonio_acum_moneta, patrimonio_acum_index, patrimonios_ale
 
 def fo(media_quartis, media_retorno, media_ganha_index, a=1, b=1, c=1):
     return a * media_quartis + b * media_retorno + c * media_ganha_index
+
+def gerar_ranking(df_resultados, cols=["cotacoes segurar", "maiores medias", "cotacoes anteriores", "period"]):
+    combinacoes = df_resultados[cols].drop_duplicates().reset_index(drop=True)
+
+    ranking = []
+    for i, comb in combinacoes.iterrows():
+        df_comb = df_resultados[(df_resultados["cotacoes segurar"] == comb["cotacoes segurar"]) &
+                    (df_resultados["maiores medias"] == comb["maiores medias"]) &
+                    (df_resultados["cotacoes anteriores"] == comb["cotacoes anteriores"]) &
+                    (df_resultados["period"] == comb["period"])]
+        
+        pontuacao_quartis = (102 - (df_comb["q1 moneta"].mean() + df_comb["q2 moneta"].mean() + df_comb["q3 moneta"].mean()) / 3) / 102
+
+        pontuacao_patrimonio = (df_comb["patrimonio final moneta"] / df_resultados["patrimonio final moneta"].max()).mean()
+
+        pontuacao_vs_bova = ((1.1 ** (df_comb["patrimonio final moneta"] - df_comb["patrimonio final bova"])) / (1.1 ** (df_resultados["patrimonio final moneta"] - df_resultados["patrimonio final bova"])).max()).mean()
+
+        pontuacao_sharpe = (1.1 ** df_comb["sharpe"] / (1.1 ** df_resultados["sharpe"]).max()).mean()
+
+        pontuacao_beta = 1 - (df_comb["beta"] / df_resultados["beta"].max()).mean()
+
+        pontuacao_max_drawdown = (-1 * df_comb["max drawdown"] / (-1 * df_resultados["max drawdown"]).max()).mean()
+
+        ob = fo(pontuacao_quartis, pontuacao_patrimonio, pontuacao_vs_bova, pontuacao_sharpe, pontuacao_beta, pontuacao_max_drawdown,
+                1, 1, 1, 1, 1, 1)
+        
+
+        ranking.append({
+            "indice_comb": i,
+            "cotacoes segurar": comb["cotacoes segurar"],
+            "maiores medias": comb["maiores medias"],
+            "cotacoes anteriores": comb["cotacoes anteriores"],
+            "period": comb["period"],
+            "media quartis": pontuacao_quartis,
+            "media patrimonio": pontuacao_patrimonio,
+            "media vs bova": pontuacao_vs_bova,
+            "media sharpe": pontuacao_sharpe,
+            "media beta": pontuacao_beta,
+            "media max drawdown": pontuacao_max_drawdown,
+            "fo": ob
+        })
+    
+    return pd.DataFrame(ranking).sort_values(by="fo", ascending=False).reset_index(drop=True)
