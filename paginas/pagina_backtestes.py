@@ -168,7 +168,7 @@ def pag_bts():
         col1.metric("Retorno Moneta", f"{resultado_final_moneta:.0f}%", delta=f"{delta:.2f}%")
         col2.metric("Retorno Anual", f"{annualized_return:.0f}%")
         col3.metric("Beta", f"{beta:.2f}")
-        col4.metric("Sharpe Ratio", f"{sharpe_ratio:.2f}%")
+        col4.metric("Sharpe Ratio", f"{sharpe_ratio:.2f}")
         col5.metric("Max Drawdown", f"{max_drawdown:.2f}%")
         
         st.subheader("Carteiras geradas no backteste")
