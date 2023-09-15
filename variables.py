@@ -9,3 +9,27 @@ US_STOCKS = ['^GSPC', 'AAPL', 'MSFT', 'AMZN', 'GOOG', 'GOOGL', 'META', 'TSLA', '
              'NKE', 'AVGO', 'MCD', 'COST', 'QCOM', 'NEE', 'TXN', 'DHR', 'MDT', 'HON', 'UNP', 'LIN', 'AMGN', 'PM', 'SBUX', 'LLY', 'UPS', 'LOW', 'AMT', 
              'IBM', 'CAT', 'GILD', 'MMM', 'MO', 'GE', 'CHTR', 'NOW', 'BLK', 'INTU', 'SPGI', 'ISRG', 'AMD', 'CVS', 'ZTS', 'PLD', 'AXP', 'TGT', 'FIS', 'APD', 
              'MDLZ', 'ADP', 'LMT', 'CME', 'DUK', 'CL', 'ICE', 'BDX', 'CB', 'SPG', 'CI', 'NSC', 'VRTX', 'CCI', 'RTX', 'TMUS', 'BKNG', 'DE', 'TJX', 'SYK', 'TFC']
+
+FERIADOS_BR = [
+    "2023-05-01",
+    "2023-06-08",
+    "2023-09-07",
+    "2023-10-12",
+    "2023-11-02",
+    "2023-11-15",
+    "2023-12-25",
+    "2023-12-29",
+]
+
+FERIADOS_US = [
+    "2023-01-02",
+    "2023-01-16",
+    "2023-02-20",
+    "2023-04-07",
+    "2023-05-29",
+    "2023-06-19",
+    "2023-07-04",
+    "2023-09-04",
+    "2023-11-23",
+    "2023-12-25",
+]

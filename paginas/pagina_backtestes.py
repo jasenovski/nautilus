@@ -6,6 +6,7 @@ from run import run_backtestes
 import plotly.graph_objects as go
 import pickle as pkl
 from funcoes.performance_tracker import PerformanceTracker
+import datetime as dtm
 
 def pag_bts():
 
@@ -99,7 +100,7 @@ def pag_bts():
 
     colunas = st.columns(2)
     data_inicial = pd.to_datetime(colunas[0].date_input(label="Data inicial", value=pd.to_datetime("2019-01-01"), min_value=pd.to_datetime("2015-01-01")))
-    data_final = pd.to_datetime(colunas[1].date_input(label="Data final", value=pd.to_datetime("2023-06-02"), min_value=data_inicial))
+    data_final = pd.to_datetime(colunas[1].date_input(label="Data final", value=pd.to_datetime(dtm.datetime.now().strftime("%Y-%m-%d")), min_value=data_inicial))
 
     solucao = st.sidebar.button(
         label="Gerar Backteste",

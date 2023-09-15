@@ -4,6 +4,7 @@ from funcoes.utils import gerar_carteira_aleatoria
 import pickle as pkl
 import os
 import pandas as pd
+from stqdm import stqdm
 
 def backtestes_nautilus(data_iniciar_bt, data_terminar_bt, df_prices_ajustado, index_id,
     periodos_anteriores, periodos_segurar, mm, epochs, times_run, total_croms, n_croms, 
@@ -13,6 +14,10 @@ def backtestes_nautilus(data_iniciar_bt, data_terminar_bt, df_prices_ajustado, i
     
     carteiras_moneta = []
     data_rodar_moneta = data_iniciar_bt
+
+    LENGTH = len(df_prices_ajustado[df_prices_ajustado.index > data_rodar_moneta].index[::periodos_segurar])
+    progress = stqdm(total=LENGTH, desc="Rodando backtestes", unit="rodada")# , ncols=100, mininterval=1.0)
+    INDEX = 0
     while data_rodar_moneta < data_terminar_bt:
 
         df_prices_ajustado_moneta = df_prices_ajustado[df_prices_ajustado.index < data_rodar_moneta].iloc[-periodos_anteriores:]
@@ -59,6 +64,8 @@ def backtestes_nautilus(data_iniciar_bt, data_terminar_bt, df_prices_ajustado, i
         )
 
         data_rodar_moneta = data_final_simulacao
+        INDEX += 1
+        progress.update(1)
     
     resultados_moneta = pd.Series([0], index=[data_iniciar_bt])
     resultados_index = pd.Series([0], index=[data_iniciar_bt])

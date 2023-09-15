@@ -95,11 +95,18 @@ def gerar_quartis(patrimonio_acum_moneta, patrimonio_acum_index, patrimonios_ale
 
     return quartis_moneta, quartis_bova, quartis_aleatorios
 
-def fo(media_quartis, media_retorno, media_ganha_index, a=1, b=1, c=1):
-    return a * media_quartis + b * media_retorno + c * media_ganha_index
+# def fo(media_quartis, media_retorno, media_ganha_index, a=1, b=1, c=1):
+#     return a * media_quartis + b * media_retorno + c * media_ganha_index
 
-def gerar_ranking(df_resultados, cols=["cotacoes segurar", "maiores medias", "cotacoes anteriores", "period"]):
+def fo(media_quartis, media_patrimonio, media_vs_bova, media_sharpe, media_beta, media_max_drawdown,
+       a, b, c, d, e, f):
+    
+    return a * media_quartis + b * media_patrimonio + c * media_vs_bova + d * media_sharpe + e * media_beta + f * media_max_drawdown
+
+def gerar_ranking(df_resultados, qtd_aleatorios, cols=["cotacoes segurar", "maiores medias", "cotacoes anteriores", "period"], country="br"):
     combinacoes = df_resultados[cols].drop_duplicates().reset_index(drop=True)
+
+    index_id = "bova" if country == "br" else "^gspc"
 
     ranking = []
     for i, comb in combinacoes.iterrows():
@@ -108,11 +115,11 @@ def gerar_ranking(df_resultados, cols=["cotacoes segurar", "maiores medias", "co
                     (df_resultados["cotacoes anteriores"] == comb["cotacoes anteriores"]) &
                     (df_resultados["period"] == comb["period"])]
         
-        pontuacao_quartis = (102 - (df_comb["q1 moneta"].mean() + df_comb["q2 moneta"].mean() + df_comb["q3 moneta"].mean()) / 3) / 102
+        pontuacao_quartis = (qtd_aleatorios - (df_comb["q1 moneta"].mean() + df_comb["q2 moneta"].mean() + df_comb["q3 moneta"].mean()) / 3) / qtd_aleatorios
 
         pontuacao_patrimonio = (df_comb["patrimonio final moneta"] / df_resultados["patrimonio final moneta"].max()).mean()
 
-        pontuacao_vs_bova = ((1.1 ** (df_comb["patrimonio final moneta"] - df_comb["patrimonio final bova"])) / (1.1 ** (df_resultados["patrimonio final moneta"] - df_resultados["patrimonio final bova"])).max()).mean()
+        pontuacao_vs_index = ((1.1 ** (df_comb["patrimonio final moneta"] - df_comb[f"patrimonio final {index_id}"])) / (1.1 ** (df_resultados["patrimonio final moneta"] - df_resultados[f"patrimonio final {index_id}"])).max()).mean()
 
         pontuacao_sharpe = (1.1 ** df_comb["sharpe"] / (1.1 ** df_resultados["sharpe"]).max()).mean()
 
@@ -120,7 +127,7 @@ def gerar_ranking(df_resultados, cols=["cotacoes segurar", "maiores medias", "co
 
         pontuacao_max_drawdown = (-1 * df_comb["max drawdown"] / (-1 * df_resultados["max drawdown"]).max()).mean()
 
-        ob = fo(pontuacao_quartis, pontuacao_patrimonio, pontuacao_vs_bova, pontuacao_sharpe, pontuacao_beta, pontuacao_max_drawdown,
+        ob = fo(pontuacao_quartis, pontuacao_patrimonio, pontuacao_vs_index, pontuacao_sharpe, pontuacao_beta, pontuacao_max_drawdown,
                 1, 1, 1, 1, 1, 1)
         
 
@@ -132,11 +139,12 @@ def gerar_ranking(df_resultados, cols=["cotacoes segurar", "maiores medias", "co
             "period": comb["period"],
             "media quartis": pontuacao_quartis,
             "media patrimonio": pontuacao_patrimonio,
-            "media vs bova": pontuacao_vs_bova,
+            "media vs index": pontuacao_vs_index,
             "media sharpe": pontuacao_sharpe,
             "media beta": pontuacao_beta,
             "media max drawdown": pontuacao_max_drawdown,
             "fo": ob
         })
-    
-    return pd.DataFrame(ranking).sort_values(by="fo", ascending=False).reset_index(drop=True)
+    df_final = pd.DataFrame(ranking).sort_values(by="fo", ascending=False).reset_index(drop=True)
+    df_final["fo_ajustada"] = 10 * df_final["fo"] / df_final["fo"].max()
+    return df_final

@@ -61,7 +61,7 @@ for k, (period, se, mm, ca, data_inicio, data_final) in list(enumerate(product(p
                         "cotacoes segurar": s, "maiores medias": mm, "cotacoes anteriores": a, "period": period,
                         "q1 moneta": quartis_moneta[0], "q2 moneta": quartis_moneta[1], "q3 moneta": quartis_moneta[2], 
                         f"q1 {index_id.replace('.SA', '').lower()}": quartis_index[0], f"q2 {index_id.replace('.SA', '').lower()}": quartis_index[1], f"q3 {index_id.replace('.SA', '').lower()}": quartis_index[2], 
-                        "patrimonio final moneta": patrimonios[0].iloc[-1], "patrimonio final bova": patrimonios[1].iloc[-1],
+                        "patrimonio final moneta": patrimonios[0].iloc[-1], f"patrimonio final {index_id.replace('.SA', '').lower()}": patrimonios[1].iloc[-1],
                         "sharpe": sharpe_moneta, "beta": beta_moneta, "max drawdown": max_drawdown_moneta})
 
     if k % 10 == 0:
