@@ -7,3 +7,5 @@ yfinance
 streamlit
 plotly
 matplotlib
+stqdm
+st-annotated-text

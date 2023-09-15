@@ -2,6 +2,8 @@ import pandas_datareader.data as web
 import yfinance as yf
 import numpy as np
 import pandas as pd
+from variables import FERIADOS_US, FERIADOS_BR
+import datetime
 
 def buscar_cotacoes(start_date, end_date, tickers_list: list, country: str) -> tuple:
 
@@ -148,3 +150,15 @@ def gerar_ranking(df_resultados, qtd_aleatorios, cols=["cotacoes segurar", "maio
     df_final = pd.DataFrame(ranking).sort_values(by="fo", ascending=False).reset_index(drop=True)
     df_final["fo_ajustada"] = 10 * df_final["fo"] / df_final["fo"].max()
     return df_final
+
+def data_vender(data_compra, cotacoes_segurar, country):
+
+    feriados = FERIADOS_BR if country.lower() == "br" else FERIADOS_US
+
+    list_total_days = [(data_compra + datetime.timedelta(x + 1)).strftime("%Y-%m-%d") for x in range(cotacoes_segurar * 2)]
+    business_days = [day for day in list_total_days if datetime.datetime.strptime(day, "%Y-%m-%d").date().weekday() < 5 and day not in feriados]
+
+    dv = business_days[cotacoes_segurar - 1]
+    dv = datetime.datetime.strptime(dv, "%Y-%m-%d").date()
+
+    return dv

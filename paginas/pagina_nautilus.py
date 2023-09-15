@@ -6,6 +6,9 @@ import pandas as pd
 import os
 import numpy as np
 import plotly.express as px
+from funcoes.utils import data_vender
+import datetime
+from annotated_text import annotated_text
 
 def pag_naut():
 
@@ -85,6 +88,18 @@ def pag_naut():
     st.sidebar.divider()
     # -----------------------------------------------------------------------------------------------------------------------------------------
 
+    periodos_segurar = st.sidebar.slider(
+        label=f"Selecione o número de {'dias' if period == 'd' else 'semanas'} de cotação para segurar a carteira:",
+        min_value=7 if period == "d" else 3,
+        max_value=200 if period == "d" else 50,
+        value=90 if period == "d" else 10,
+        step=1
+    )
+
+    # -----------------------------------------------------------------------------------------------------------------------------------------
+    st.sidebar.divider()
+    # -----------------------------------------------------------------------------------------------------------------------------------------
+
     top_averages = st.sidebar.slider(
         label="Maiores médias:",
         min_value=0,
@@ -153,6 +168,21 @@ def pag_naut():
         st.dataframe(
             data=df_carteira[["Ação", f"Preços ({currency})", "Percentual %", "Quantidade Ação", f"Valor Ação ({currency})"]]
         )
+
+        dc = datetime.datetime.now()
+        dv = data_vender(data_compra=dc, cotacoes_segurar=periodos_segurar, country=country)
+
+        # st.warning(
+        #     body=f"Data de venda da carteira: {dv.strftime('%d/%m/%Y')}",
+        # )
+
+        annotated_text(
+            "Data de venda da carteira: ",
+            (f"{dv.strftime('%d/%m/%Y')}", "⚠️", "#ff0")
+        )
+        # "#8ef" (azul claro)
+        # "#ff0" (amarelo)
+    
         
         # -----------------------------------------------------------------------------------------------------------------------------------------
         st.divider()
