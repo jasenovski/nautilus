@@ -6,3 +6,5 @@ moneta.ipynb
 main_naut.py
 tests.ipynb
 resultados/outros
+prices/*.pkl
+resultados/*.pkl

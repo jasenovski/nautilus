@@ -121,7 +121,7 @@ def pag_bts():
         "total_croms": 40, 
         "n_croms": 6,
         "base_softmax": 1.10, 
-        "seed": 1, 
+        "seed": None, 
         "n_aleatorios": qtd_aleatorios, 
         "perc_max_nan": 0.03,
         "exportar_resultados": True

@@ -127,7 +127,7 @@ def pag_naut():
         "total_croms": 40,
         "n_croms": 6,
         "base_softmax": 1.10,
-        "seed": 1,
+        "seed": None,
         "perc_max_nan": 0.03,
         "exportar_carteira": True,
         }
