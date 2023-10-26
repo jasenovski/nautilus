@@ -5,25 +5,31 @@ from funcoes import utils
 from funcoes.performance_tracker import PerformanceTracker
 import pickle as pkl
 
-country = "us"
+country = "br"
 if country == "br":
     index_id = "BOVA11.SA"
     from variables import BR_STOCKS as acoes
+    acoes.remove("HAPV3")
+    acoes.remove("NTCO3")
+    acoes.remove("RRRP3")
+    acoes.remove("SIMH3")
 elif country == "us":
     index_id = "^GSPC"
     from variables import US_STOCKS as acoes
 
-epochs = 30
-times_run = 100
+epochs = 10
+times_run = 10
 total_croms = 40
 n_croms = 6
-base_softmax = 1.05
+base_softmax = 1.10
 seed = None
 n_aleatorios = 100
 
-comecos = ["2018-03-15", "2018-08-10", "2019-01-28", "2019-06-04", "2020-02-17", "2020-08-15", "2021-03-21", "2021-08-11"]
+# comecos = ["2018-03-15", "2018-08-10", "2019-01-28", "2019-06-04", "2020-02-17", "2020-08-15", "2021-03-21", "2021-08-11"]
+comecos = ["2014-05-05", "2014-09-10", "2015-03-15", "2015-08-10", "2016-01-28", "2016-06-04", "2017-02-17", "2017-08-15", "2018-03-21", "2018-08-11"]
 
-finais = ["2022-04-20", "2022-08-02", "2023-02-11", "2023-06-22", "2023-09-01"]
+# finais = ["2022-04-20", "2022-08-02", "2023-02-11", "2023-06-22", "2023-09-01"]
+finais = ["2019-04-20", "2019-08-02", "2020-02-11", "2020-06-22", "2020-09-01", "2020-12-30"]
 
 segurar = [(30, 4), (90, 12), (200, 25)]
 maiores_medias = [-1, 10, 20]
@@ -47,7 +53,7 @@ for k, (period, se, mm, ca, data_inicio, data_final) in list(enumerate(product(p
     patrimonios, retornos, _ = run_backtestes(stocks_selections=acoes, country=country, period=period,
                                                 data_iniciar_bt=data_iniciar_bt, data_terminar_bt=data_terminar_bt, index_id=index_id, periodos_anteriores=a, 
                                                 periodos_segurar=s, mm=mm, epochs=epochs, times_run=times_run, total_croms=total_croms, n_croms=n_croms,
-                                                base_softmax=base_softmax, seed=seed, n_aleatorios=n_aleatorios, perc_max_nan=0.03, exportar_resultados=False)
+                                                base_softmax=base_softmax, seed=seed, n_aleatorios=n_aleatorios, perc_max_nan=0.10, exportar_resultados=False)
 
     quartis_moneta, quartis_index, _ = utils.gerar_quartis(*patrimonios, size=5)
 

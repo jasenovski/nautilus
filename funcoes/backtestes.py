@@ -32,23 +32,25 @@ def backtestes_nautilus(data_iniciar_bt, data_terminar_bt, df_prices_ajustado, i
         
         acoes_carteira = list(carteira.keys())
         percentuais_carteira = np.array(list(carteira.values())).reshape(-1, 1)
-        retornos_moneta = df_prices_ajustado_futuro[acoes_carteira].pct_change().dropna().values.dot(percentuais_carteira).ravel()
-        retornos_moneta_series = pd.Series(retornos_moneta, index=df_prices_ajustado_futuro.index[1:])
+        retornos_moneta = df_prices_ajustado_futuro[acoes_carteira].pct_change().fillna(0).values.dot(percentuais_carteira).ravel()
+        retornos_moneta_series = pd.Series(retornos_moneta, index=df_prices_ajustado_futuro.index)
 
         retornos_aleatorios = []
         for _ in range(n_aleatorios):
             carteira_aleatoria = gerar_carteira_aleatoria(acoes=df_prices_ajustado.columns, seed=seed)
             percentuais_carteira_aleatoria = np.array(list(carteira_aleatoria.values())).reshape(-1, 1)
             acoes_carteira_aleatoria = list(carteira_aleatoria.keys())
-            retornos = df_prices_ajustado_futuro[acoes_carteira_aleatoria].pct_change().dropna().values.dot(percentuais_carteira_aleatoria).ravel()
-            retornos_series = pd.Series(retornos, index=df_prices_ajustado_futuro.index[1:])
+            # retornos = df_prices_ajustado_futuro[acoes_carteira_aleatoria].pct_change().dropna().values.dot(percentuais_carteira_aleatoria).ravel()
+            retornos = df_prices_ajustado_futuro[acoes_carteira_aleatoria].pct_change().fillna(0).values.dot(percentuais_carteira_aleatoria).ravel()
+            # retornos_series = pd.Series(retornos, index=df_prices_ajustado_futuro.index[1:])
+            retornos_series = pd.Series(retornos, index=df_prices_ajustado_futuro.index)
             retornos_aleatorios.append(retornos_series)
         
         data_final_simulacao = df_prices_ajustado_futuro.index[-1]
         
         prices_index_filtrado = prices_index[prices_index.index > data_rodar_moneta].iloc[:periodos_segurar]
-        retornos_index = prices_index_filtrado[[index_id]].pct_change().dropna().values.ravel()
-        retornos_index_series = pd.Series(retornos_index, index=prices_index_filtrado.index[1:])
+        retornos_index = prices_index_filtrado[[index_id]].pct_change().fillna(0).values.ravel()
+        retornos_index_series = pd.Series(retornos_index, index=prices_index_filtrado.index)
 
         carteiras_moneta.append(
             {

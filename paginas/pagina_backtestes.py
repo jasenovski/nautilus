@@ -174,6 +174,10 @@ def pag_bts():
         
         st.subheader("Carteiras geradas no backteste")
         st.divider()
+
+
+        qtd_venceu_bova = 0
+        qtd_positivo = 0
         for i, carteira in enumerate(carteiras):
             data_inicial = carteira["data_inicial"]
             data_final = carteira["data_final"]
@@ -181,15 +185,40 @@ def pag_bts():
             retorno_esperado = carteira["retorno_esperado"]
             risco_esperado = carteira["risco_esperado"]
 
+            ret_acum_moneta = (1 + carteira["retornos_moneta"]).cumprod()
+            ret_acum_index = (1 + carteira["retornos_index"]).cumprod()
+            retorno_obtido_moneta = ret_acum_moneta.iloc[-1] - 1
+            retorno_obtido_index = ret_acum_index.iloc[-1] - 1
+
             df = (pd.DataFrame(wallet.values(), index=wallet.keys(), columns=["Percentuais %"]) * 100).round(2)
             df = df[df["Percentuais %"] > 1]
 
-            
-
-            st.write(f"Carteira {i + 1}")
+            st.subheader(f"Carteira {i + 1}")
             st.write(f"{data_inicial.strftime('%d/%m/%Y')} até {data_final.strftime('%d/%m/%Y')}")
-            st.dataframe(df)
+            # st.dataframe(df)
 
-            col1 = st.columns(1)
-            col1[0].metric("Retorno Esperado", f"{retorno_esperado * 100:.2f}%")
+            col1, col2, col3, col4 = st.columns(4)
+            col1.dataframe(df)
+            col2.metric("Retorno Esperado", f"{retorno_esperado * 100:.2f}%")
+            col3.metric("Retorno Moneta", f"{retorno_obtido_moneta * 100:.2f}%")
+            col4.metric("Retorno Bova", f"{retorno_obtido_index * 100:.2f}%")
+
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(x=ret_acum_moneta.index, y=ret_acum_moneta, name="Moneta", line=dict(color="blue")))
+            fig.add_trace(go.Scatter(x=ret_acum_index.index, y=ret_acum_index, name=f"{index_id}", line=dict(color="red")))
+
+            st.plotly_chart(fig)
+
+            if retorno_obtido_moneta > retorno_obtido_index:
+                qtd_venceu_bova += 1
+
+            if retorno_obtido_moneta > 0:
+                qtd_positivo += 1
+
             st.divider()
+
+        st.subheader("Resultados Gerais")
+
+        col1, col2 = st.columns(2)
+        col2.metric(f"Quantidade de carteiras que venceram o {index_id}", f"{qtd_venceu_bova}/{len(carteiras)}", delta=f"{(qtd_venceu_bova / len(carteiras)) * 100:.2f}%")
+        col1.metric(f"Quantidade de carteiras com retorno positivo", f"{qtd_positivo}/{len(carteiras)}", delta=f"{(qtd_positivo / len(carteiras)) * 100:.2f}%")
