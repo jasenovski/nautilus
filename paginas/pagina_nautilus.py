@@ -80,7 +80,7 @@ def pag_naut():
         label=f"Selecione o número de {'dias' if period == 'd' else 'semanas'} anteriores por ação:",
         min_value=7 if period == "d" else 4,
         max_value=200 if period == "d" else 50,
-        value=30 if period == "d" else 10,
+        value=200 if period == "d" else 10,
         step=1
     )
 
@@ -104,7 +104,7 @@ def pag_naut():
         label="Maiores médias:",
         min_value=0,
         max_value=20,
-        value=15,
+        value=10,
         step=1
     )
 

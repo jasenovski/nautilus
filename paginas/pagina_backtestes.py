@@ -54,7 +54,7 @@ def pag_bts():
         label=f"Selecione o número de {'dias' if period == 'd' else 'semanas'} anteriores por ação:",
         min_value=7 if period == "d" else 4,
         max_value=200 if period == "d" else 50,
-        value=90 if period == "d" else 20,
+        value=200 if period == "d" else 20,
         step=1
     )
 
@@ -78,7 +78,7 @@ def pag_bts():
         label="Maiores médias:",
         min_value=0,
         max_value=20,
-        value=20,
+        value=10,
         step=1
     )
     
