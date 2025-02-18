@@ -130,13 +130,6 @@ def pagina_moneta(simbolos: dict, paises: dict, intervalos: dict) -> None:
                                   cotacoes_segurar=0,
                                   intervalo=intervalos[intervalo])
         
-        if cotacoes.isna().sum().sum() > 0:
-            acoes_com_na = cotacoes.columns[cotacoes.isna().sum() > 0]
-            mensagem = f"Erro: as ações {list(acoes_com_na)} possuem valores nulos. " \
-                        "Por favor, atualize/retire estas ações no arquivo dos símbolos."
-            st.warning(mensagem)
-            return
-        
         # acima, o 'cotacoes_segurar' é 0, pois o modelo vai rodar com dados atuais
         # e não em um backtest
         
