@@ -90,7 +90,7 @@ def formata_cotacoes(cotacoes: pd.DataFrame, maiores_medias: int) -> pd.DataFram
     cotacoes.drop(columns=acoes_excluir, inplace=True)
 
     # preenche os valores nulos com o último valor válido
-    cotacoes.fillna(method="ffill", inplace=True)
+    cotacoes.ffill(inplace=True)
 
     # elimina as colunas (axis = 1: nome das ações) que possuem valores nulos para datas específicas dentro do intervalo de busca    
     cotacoes.dropna(axis=0, inplace=True)

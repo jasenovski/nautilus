@@ -165,6 +165,8 @@ def pagina_moneta(simbolos: dict, paises: dict, intervalos: dict) -> None:
 
         # cria um subtitulo
         st.subheader("Carteira Final")
+        ultima_data_considerada = variacoes.index[-1].strftime("%Y-%m-%d")
+        st.write(f"Última data de dados: {ultima_data_considerada}")
         # mostra o dataframe da carteira final na tela
         st.dataframe(df_carteira)
 
