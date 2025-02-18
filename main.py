@@ -7,7 +7,7 @@ from simbolos import simbolos
 # e as funções como valor
 paginas = {
     "Moneta": pagina_moneta,
-    "Backtestes": pagina_backtestes
+#     "Backtestes": pagina_backtestes
 }
 
 paises = {"Brasil": "BR", "EUA": "US"}
