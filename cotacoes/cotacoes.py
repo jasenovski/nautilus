@@ -47,27 +47,21 @@ def busca_cotacoes(simbolos: list, intervalo: str,
             raise ValueError("É necessário fornecer os parametros 'cotacoes_anteriores' e 'cotacoes_segurar'.")
 
     # busca as cotações das ações para o intervalo especificado
-    cotacoes: pd.DataFrame = yf.download(simbolos, start=data_inicio, end=data_fim)['Adj Close']
+    df_cotacoes: pd.DataFrame = yf.download(simbolos, 
+                                         start=data_inicio, 
+                                         end=data_fim,
+                                         group_by='ticker', 
+                                         auto_adjust=True, 
+                                         progress=False)# ['Adj Close']
+    
+    df_cotacoes = df_cotacoes.unstack().reset_index(name="Valores")
+    df_cotacoes = df_cotacoes[df_cotacoes["Price"] == "Close"].reset_index(drop=True)
+    df_cotacoes = \
+        df_cotacoes.pivot_table(index=["Date"], 
+                                columns="Ticker", 
+                                values="Valores")
 
-    # api_key = "640b20547955f2.19099552"
-    # cotacoes = pd.DataFrame(data=[], columns=["date", "open", "high", "low", "close", "adjusted_close", "volume"])
-    # for simbolo in tqdm(simbolos):
-    #     url = f'https://eodhd.com/api/eod/{simbolo}?from={data_inicio}&to={data_fim}&period={intervalo}&api_token={api_key}&fmt=json'
-    #     data = requests.get(url).json()
-    #     df = pd.DataFrame(data)
-    #     df["nm_acao"] = simbolo
-
-    #     # print(df)
-
-    #     cotacoes = pd.concat([cotacoes, df])
-
-    # cotacoes = cotacoes.pivot(index="date", columns="nm_acao", values="adjusted_close")
-    # # cotacoes[(cotacoes.index >= data_fim) & (cotacoes.index <= data_inicio)]
-    # cotacoes.columns.name = "Ticker"
-    # cotacoes.index.name = "Date"
-    # cotacoes.index = pd.to_datetime(cotacoes.index)
-
-    return cotacoes
+    return df_cotacoes
 
 def formata_cotacoes(cotacoes: pd.DataFrame, maiores_medias: int) -> pd.DataFrame:
 
