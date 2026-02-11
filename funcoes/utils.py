@@ -1,4 +1,4 @@
-import pandas_datareader.data as web
+# import pandas_datareader.data as web
 import yfinance as yf
 import numpy as np
 import pandas as pd
@@ -24,8 +24,8 @@ def buscar_cotacoes(start_date, end_date, tickers_list: list, country: str) -> t
         for ticker in tickers_list:
             tickers.append(ticker if ticker.endswith(".SA") else ticker + ".SA")  # ação BR deve terminar com '.SA'
 
-    yf.pdr_override()
-    cotations = web.get_data_yahoo(tickers, start=start_date, end=end_date , threads=1)['Adj Close']
+    cotations = yf.download(tickers=tickers, start=start_date, end=end_date, 
+                            progress=False, auto_adjust=False)['Adj Close']
 
     return cotations
 
@@ -61,7 +61,8 @@ def ajustar_prices(df, period="d", perc_corte=0.05):
     for acao_excluir in acoes_excluir:
         df.drop(acao_excluir, axis=1, inplace=True)
     
-    df.dropna(axis=0, inplace=True)
+    df.ffill(inplace=True)
+    df.bfill(inplace=True)
 
     df = df.iloc[::1 if period == "d" else 5]
 
@@ -108,7 +109,7 @@ def fo(media_quartis, media_patrimonio, media_vs_bova, media_sharpe, media_beta,
 def gerar_ranking(df_resultados, qtd_aleatorios, cols=["cotacoes segurar", "maiores medias", "cotacoes anteriores", "period"], country="br"):
     combinacoes = df_resultados[cols].drop_duplicates().reset_index(drop=True)
 
-    index_id = "bova" if country == "br" else "^gspc"
+    index_id = "bova11" if country.lower() == "br" else "^gspc"
 
     ranking = []
     for i, comb in combinacoes.iterrows():

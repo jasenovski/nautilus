@@ -108,10 +108,10 @@ def pag_bts():
         kwargs=
         {
         "stocks_selections": stocks_selections, 
-        "country": country,
-        "period": period,
         "data_iniciar_bt": data_inicial, 
         "data_terminar_bt": data_final, 
+        "country": country,
+        "period": period,
         "index_id": index_id, 
         "periodos_anteriores": periodos_anteriores, 
         "periodos_segurar": periodos_segurar, 
@@ -123,7 +123,6 @@ def pag_bts():
         "base_softmax": 1.10, 
         "seed": None, 
         "n_aleatorios": qtd_aleatorios, 
-        "perc_max_nan": 0.03,
         "exportar_resultados": True
         }
     )
@@ -155,7 +154,8 @@ def pag_bts():
 
         aleatorios = sorted(np.random.choice(range(len(patrimonios_aleatorios)), size=len(patrimonios_aleatorios) // 2, replace=False))
         for aleatorio in aleatorios:
-            fig.add_trace(go.Scatter(x=patrimonios_aleatorios[aleatorio].index, y=patrimonios_aleatorios[aleatorio], name=f"Aleatorio {aleatorio}", line=dict(color="green"))) \
+            fig.add_trace(go.Scatter(x=patrimonios_aleatorios[aleatorio].index, y=patrimonios_aleatorios[aleatorio], 
+                                     name=f"Aleatorio {aleatorio}", line=dict(color="green"))) \
             .update_traces(visible="legendonly", selector=lambda t: not t.name in ["Moneta", f"{index_id}"])
 
         st.plotly_chart(fig)
@@ -190,8 +190,8 @@ def pag_bts():
             retorno_obtido_moneta = ret_acum_moneta.iloc[-1] - 1
             retorno_obtido_index = ret_acum_index.iloc[-1] - 1
 
-            df = (pd.DataFrame(wallet.values(), index=wallet.keys(), columns=["Percentuais %"]) * 100).round(2)
-            df = df[df["Percentuais %"] > 1]
+            df = (pd.DataFrame(wallet.values(), index=wallet.keys(), columns=["Percentuais (%)"]) * 100).round(2)
+            df = df[df["Percentuais (%)"] > 1]
 
             st.subheader(f"Carteira {i + 1}")
             st.write(f"{data_inicial.strftime('%d/%m/%Y')} até {data_final.strftime('%d/%m/%Y')}")
@@ -220,5 +220,11 @@ def pag_bts():
         st.subheader("Resultados Gerais")
 
         col1, col2 = st.columns(2)
-        col2.metric(f"Quantidade de carteiras que venceram o {index_id}", f"{qtd_venceu_bova}/{len(carteiras)}", delta=f"{(qtd_venceu_bova / len(carteiras)) * 100:.2f}%")
-        col1.metric(f"Quantidade de carteiras com retorno positivo", f"{qtd_positivo}/{len(carteiras)}", delta=f"{(qtd_positivo / len(carteiras)) * 100:.2f}%")
+        
+        col1.metric(label=f"Quantidade de carteiras com retorno positivo", 
+                    value=f"{qtd_positivo}/{len(carteiras)}", 
+                    delta=f"{(qtd_positivo / len(carteiras)) * 100:.2f}%")
+
+        col2.metric(label=f"Quantidade de carteiras que venceram o {index_id}", 
+                    value=f"{qtd_venceu_bova}/{len(carteiras)}", 
+                    delta=f"{(qtd_venceu_bova / len(carteiras)) * 100:.2f}%")

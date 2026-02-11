@@ -138,25 +138,24 @@ def pag_naut():
         # -----------------------------------------------------------------------------------------------------------------------------------------
         # Carregando os dados e tratando-os
         df_prices = pd.read_pickle(os.path.join("prices", "df_prices.pkl"))
-        
-        with open(os.path.join("resultados", "resultados.pkl"), "rb") as file:
-            carteira, ret, risk = pkl.load(file)
+
+        carteira, ret, risk = pd.read_pickle(os.path.join("resultados", "resultados.pkl"))
 
         precos = df_prices[carteira.keys()].iloc[-1].values
 
         df_carteira = \
         pd.DataFrame(
             {
-                "Ação": np.array(list(carteira.keys())),
+                f"Ação": list(carteira.keys()),
                 f"Preços ({currency})": precos,
-                "Percentual %": np.array(list(carteira.values())),
-                "Quantidade Ação": (np.array(list(carteira.values())) * investment / precos).round(0 if country == "BR" else 4),
+                f"Percentuais (%)": list(carteira.values()),
+                f"Quantidade Ação": (np.array(list(carteira.values())) * investment / precos).round(0 if country == "BR" else 4),
                 f"Valor Ação ({currency})": np.array(list(carteira.values())) * investment
             }
         )
 
-        df_carteira = df_carteira[df_carteira["Percentual %"] >= minimum_percentage]
-        df_carteira["Percentual %"] = (df_carteira["Percentual %"] * 100).round(2)
+        df_carteira = df_carteira[df_carteira["Percentuais (%)"] >= minimum_percentage]
+        df_carteira["Percentuais (%)"] = (df_carteira["Percentuais (%)"] * 100).round(2)
         # -----------------------------------------------------------------------------------------------------------------------------------------
 
         # -----------------------------------------------------------------------------------------------------------------------------------------
@@ -166,7 +165,7 @@ def pag_naut():
         )
 
         st.dataframe(
-            data=df_carteira[["Ação", f"Preços ({currency})", "Percentual %", "Quantidade Ação", f"Valor Ação ({currency})"]]
+            data=df_carteira
         )
 
         dc = datetime.datetime.now()
@@ -182,13 +181,18 @@ def pag_naut():
         )
         # "#8ef" (azul claro)
         # "#ff0" (amarelo)
+        # "#f00" (vermelho)
+        # "#0f0" (verde)
+        # "#0ff" (azul claro)
+        # "#f0f" (roxo)
+        # "#888" (cinza)
     
         
         # -----------------------------------------------------------------------------------------------------------------------------------------
         st.divider()
         # -----------------------------------------------------------------------------------------------------------------------------------------
         # GRÁFICO
-        fig = px.pie(df_carteira, values='Percentual %', names='Ação', title='Carteira Ótima')
+        fig = px.pie(df_carteira, values='Percentuais (%)', names='Ação', title='Carteira Ótima')
         st.plotly_chart(fig)
 
         p = 22 if period == "d" else 4.28
@@ -209,7 +213,7 @@ def pag_naut():
         # -----------------------------------------------------------------------------------------------------------------------------------------
         
         # TABELA COTAÇÕES
-        st.subheader(f"Cotações (adj. close) para a geração da carteira ({currency}):")
+        st.subheader(f"Cotações (adj. close) para a geração da carteira acima:")
 
         st.dataframe(
                 data=df_prices
